@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizCraft - C++ OOP Simulation Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #07130f;
+      --bg-card: #0d1e18;
+      --bg-card-hover: #132720;
+      --border-subtle: #1c362c;
+      --border-focus: #34d399;
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --primary-light: #6ee7b7;
+      --primary-dim: rgba(16, 185, 129, 0.12);
+      --accent: #34d399;
+      --text-main: #f0fdf4;
+      --text-muted: #86a798;
+      --text-dim: #4e6b5e;
+      --danger: #f87171;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(52, 211, 153, 0.04) 0%, transparent 40%);
+    }
+
+    /* Top Navigation Bar */
+    header {
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(7, 19, 15, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 1rem 2rem;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: #0d211a;
+      border: 1.5px solid #1f4738;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .brand-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-text h1 span.badge {
+      font-size: 0.7rem;
+      background: var(--primary-dim);
+      color: var(--primary-light);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+
+    .brand-text p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .nav-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.85rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      color: var(--primary-light);
+      font-size: 0.8rem;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary);
+    }
+
+    /* Main Container with generous laptop width */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 1100px;
+      margin: 2.5rem auto;
+      padding: 0 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Go Back Bar */
+    .action-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      min-height: 42px;
+    }
+
+    .btn-back {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-back:hover {
+      background: var(--bg-card);
+      color: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    /* Primary Card Wrapper */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 2.75rem 3.25rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      position: relative;
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .student-avatar-badge {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 1.25rem auto;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--primary-light);
+    }
+
+    .tag-bubble {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: var(--primary-dim);
+      color: var(--primary-light);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      margin-bottom: 0.85rem;
+    }
+
+    .card-title {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    /* Domain Selection Grid */
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .domain-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2.25rem;
+    }
+
+    .domain-card {
+      background: rgba(13, 30, 24, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.15rem;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .domain-card:hover {
+      border-color: rgba(52, 211, 153, 0.4);
+      background: var(--bg-card-hover);
+      transform: translateY(-1px);
+    }
+
+    .domain-card.active {
+      border-color: var(--primary);
+      background: rgba(16, 185, 129, 0.08);
+      box-shadow: 0 0 0 1px var(--primary);
+    }
+
+    .domain-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--text-dim);
+      margin-top: 3px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: border-color 0.2s;
+    }
+
+    .domain-card.active .domain-radio {
+      border-color: var(--primary);
+    }
+
+    .domain-card.active .domain-radio::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    .domain-info h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.25rem;
+    }
+
+    .domain-info p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Parameters Input Grid */
+    .params-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2.25rem;
+    }
+
+    .param-box {
+      background: rgba(7, 19, 15, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+    }
+
+    .param-box label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .param-box input {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      padding: 0.65rem 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: border-color 0.2s;
+    }
+
+    .param-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .param-box span.hint {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 0.4rem;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      background: var(--primary);
+      color: #061811;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 1.05rem;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.65rem;
+      transition: all 0.2s;
+      font-family: var(--font-sans);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25);
+    }
+
+    /* Question Screen Layout */
+    .quiz-progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(28, 54, 44, 0.5);
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #34d399);
+      width: 10%;
+      transition: width 0.3s ease;
+    }
+
+    .question-headline {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.45;
+      margin-bottom: 2rem;
+      padding: 1.25rem 1.5rem;
+      background: rgba(7, 19, 15, 0.6);
+      border-left: 4px solid var(--primary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    .options-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      margin-bottom: 2.25rem;
+    }
+
+    .option-btn {
+      background: rgba(13, 30, 24, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.15rem 1.45rem;
+      text-align: left;
+      color: var(--text-main);
+      font-size: 0.98rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 1.15rem;
+      transition: all 0.2s ease;
+      font-family: var(--font-sans);
+    }
+
+    .option-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--primary-light);
+      transform: translateX(4px);
+    }
+
+    .option-key {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-sm);
+      background: rgba(7, 19, 15, 0.9);
+      border: 1px solid var(--border-subtle);
+      display: grid;
+      place-items: center;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--primary-light);
+      flex-shrink: 0;
+    }
+
+    .quiz-footer-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 1.5rem;
+    }
+
+    .btn-skip {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 0.8rem 1.6rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-skip:hover {
+      background: rgba(248, 113, 113, 0.1);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    /* Scoreboard Table */
+    .table-container {
+      overflow-x: auto;
+      margin: 1.5rem 0 2rem 0;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      background: rgba(7, 19, 15, 0.5);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    th {
+      background: rgba(13, 30, 24, 0.9);
+      padding: 1rem 1.25rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    td {
+      padding: 1.1rem 1.25rem;
+      border-bottom: 1px solid rgba(28, 54, 44, 0.4);
+      color: var(--text-main);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .reg-tag {
+      font-family: var(--font-mono);
+      color: var(--primary-light);
+      font-weight: 600;
+    }
+
+    .score-badge {
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+
+    /* Step Visibility */
+    .step-section {
+      display: none;
+    }
+
+    .step-section.active {
+      display: block;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      background: rgba(7, 19, 15, 0.5);
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 900px) {
+      .card {
+        padding: 2rem 1.5rem;
+      }
+      .domain-grid {
+        grid-template-columns: 1fr;
+      }
+      .params-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header>
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <!-- Exact Curving Leaf Outline Icon from Original Design -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>QuizCraft <span class="badge">OOP C++</span></h1>
+          <p>Modular Quiz Simulation Engine</p>
+        </div>
+      </div>
+      <div class="nav-meta">
+        <div class="status-badge" id="domainNavBadge">
+          <span class="status-dot"></span>
+          <span id="domainNavText">Domain: C++ Programming</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Work Area -->
+  <main>
+    <!-- Dynamic Step Action Bar (Holds "Go Back" button) -->
+    <div class="action-topbar">
+      <button class="btn-back" id="globalBackBtn" style="visibility: hidden;">
+        &larr; Go Back to Previous Step
+      </button>
+      <div id="stepIndicator" style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">
+        Step 1 of 4: Setup
+      </div>
+    </div>
+
+    <!-- Step 1: Parameter Setup -->
+    <section id="step1" class="step-section active">
+      <div class="card">
+        <div class="card-header">
+          <span class="tag-bubble">Session Initialization</span>
+          <h2 class="card-title">Setup Quiz Parameters</h2>
+          <p class="card-subtitle">
+            Configure domains, participants, question sets, and custom PRNG seed identical to the C++ backend.
+          </p>
+        </div>
+
+        <div class="section-label">1. Choose Subject Domain</div>
+        <div class="domain-grid">
+          <div class="domain-card active" data-domain="cpp">
+            <div class="domain-radio"></div>
+            <div class="domain-info">
+              <h3>C++ Programming</h3>
+              <p>OOPs, pointers, classes, STL containers, virtual functions</p>
+            </div>
+          </div>
+
+          <div class="domain-card" data-domain="evs">
+            <div class="domain-radio"></div>
+            <div class="domain-info">
+              <h3>Environmental Sciences</h3>
+              <p>Ecology, ozone layer, pollution, global treaties</p>
+            </div>
+          </div>
+
+          <div class="domain-card" data-domain="gk">
+            <div class="domain-radio"></div>
+            <div class="domain-info">
+              <h3>General Knowledge</h3>
+              <p>Geography, world oceans, science, international organs</p>
+            </div>
+          </div>
+
+          <div class="domain-card" data-domain="history">
+            <div class="domain-radio"></div>
+            <div class="domain-info">
+              <h3>History</h3>
+              <p>Ancient civilizations, world revolutions, empires</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label">2. Configure Participants & Pool Size</div>
+        <div class="params-grid">
+          <div class="param-box">
+            <label for="numStudents">Number of Students</label>
+            <input type="number" id="numStudents" value="1" min="1" max="50">
+            <span class="hint">Supports multiple participants</span>
+          </div>
+          <div class="param-box">
+            <label for="qCount">Questions Per Quiz</label>
+            <input type="number" id="qCount" value="10" min="5" max="15">
+            <span class="hint">Random subset (5 to 15)</span>
+          </div>
+          <div class="param-box">
+            <label for="seedVal">PRNG Seed Value</label>
+            <input type="number" id="seedVal" value="1234" min="1">
+            <span class="hint">Matches C++ PRNG formula</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btnInitQuiz">
+          Initialize Quiz Session &rarr;
+        </button>
+      </div>
+    </section>
+
+    <!-- Step 2: Student Details Entry -->
+    <section id="step2" class="step-section">
+      <div class="card">
+        <div class="card-header">
+          <!-- Graduation Cap Icon -->
+          <div class="student-avatar-badge">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+          </div>
+          <span class="tag-bubble" id="studentCounterBadge">Student #1 of 1</span>
+          <h2 class="card-title">Candidate Registration</h2>
+          <p class="card-subtitle">
+            Enter candidate credentials before starting the question round.
+          </p>
+        </div>
+
+        <div style="max-width: 580px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
+          <div class="param-box">
+            <label for="studentReg">Registration Number</label>
+            <input type="text" id="studentReg" placeholder="e.g. 23BCSE101" style="font-size: 1rem; font-family: var(--font-mono);">
+          </div>
+          <div class="param-box">
+            <label for="studentName">Full Name</label>
+            <input type="text" id="studentName" placeholder="e.g. Shraddha" style="font-size: 1rem; font-family: var(--font-sans);">
+          </div>
+          <button class="btn-primary" id="btnStartStudentRound">
+            &#9654; Start Test Round
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: Interactive Question Round -->
+    <section id="step3" class="step-section">
+      <div class="card">
+        <div class="quiz-progress-bar-bg">
+          <div class="quiz-progress-fill" id="progressBar"></div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <span class="tag-bubble" id="activeCandidateTag">Shraddha (23BCSE101)</span>
+          <span style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);" id="qIndexLabel">
+            Question 1 / 10
+          </span>
+        </div>
+
+        <div class="question-headline" id="questionText">
+          Loading question text...
+        </div>
+
+        <div class="options-stack" id="optionsContainer">
+          <!-- Dynamic options loaded via JS -->
+        </div>
+
+        <div class="quiz-footer-actions">
+          <button class="btn-skip" id="btnSkipQuestion">
+            Skip this question (0 marks) &rarr;
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 4: Final Scoreboard -->
+    <section id="step4" class="step-section">
+      <div class="card">
+        <div class="card-header">
+          <span class="tag-bubble">Results Calculated</span>
+          <h2 class="card-title">Consolidated Scoreboard</h2>
+          <p class="card-subtitle" id="scoreboardMeta">
+            Performance summary across all participating candidates.
+          </p>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Reg No</th>
+                <th>Candidate Name</th>
+                <th>Correct (+1)</th>
+                <th>Wrong (0)</th>
+                <th>Skipped (0)</th>
+                <th>Final Score</th>
+              </tr>
+            </thead>
+            <tbody id="scoreboardBody">
+              <!-- Dynamic Rows inserted here -->
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+          <span style="font-size: 0.85rem; color: var(--text-dim);">
+            Grading Policy: 1 mark per correct answer | 0 for incorrect/skipped
+          </span>
+          <button class="btn-primary" id="btnRestartAll" style="width: auto; padding: 0.8rem 1.8rem;">
+            &#8635; Start New Session
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    C++ OOP Course Project &bull; Mini Quiz Game with Scoreboard &bull; 4 Specialized Domains
+  </footer>
+
+  <script>
+    // --- 1. Pure C++ Question Bank Mappings ---
+    const QUESTION_BANK = {
+      cpp: [
+        { id: 1, text: "Which concept allows using the same function name with different arguments?", options: ["Encapsulation", "Function Overloading", "Virtual Functions", "Abstraction"], correct: 1 },
+        { id: 2, text: "Which operator cannot be overloaded in C++?", options: ["+", "==", "::", "[]"], correct: 2 },
+        { id: 3, text: "Which keyword is used to prevent inheritance in C++?", options: ["sealed", "static", "final", "const"], correct: 2 },
+        { id: 4, text: "What type of inheritance can lead to the diamond problem?", options: ["Single", "Multiple", "Multilevel", "Hierarchical"], correct: 1 },
+        { id: 5, text: "What is the default access specifier for class members in C++?", options: ["public", "protected", "private", "internal"], correct: 2 },
+        { id: 6, text: "A class containing at least one pure virtual function is called:", options: ["Static Class", "Abstract Class", "Template Class", "Friend Class"], correct: 1 },
+        { id: 7, text: "Which of the following is executed automatically when an object is destroyed?", options: ["Constructor", "Destructor", "Static Method", "Virtual Method"], correct: 1 },
+        { id: 8, text: "Which pointer points to the invoking object inside a member function?", options: ["base pointer", "super pointer", "this pointer", "self pointer"], correct: 2 },
+        { id: 9, text: "Wrapping data and functions into a single unit is known as:", options: ["Encapsulation", "Polymorphism", "Inheritance", "Abstraction"], correct: 0 },
+        { id: 10, text: "Which feature of OOP allows code reusability?", options: ["Polymorphism", "Encapsulation", "Inheritance", "Exception Handling"], correct: 2 },
+        { id: 11, text: "Which of the following cannot be a friend in C++?", options: ["Function", "Class", "Member Function", "Object"], correct: 3 },
+        { id: 12, text: "Constructors cannot be:", options: ["Inline", "Overloaded", "Virtual", "Public"], correct: 2 },
+        { id: 13, text: "What is the return type of a constructor?", options: ["void", "int", "bool", "No return type"], correct: 3 },
+        { id: 14, text: "Which keyword is used to define dynamic memory allocation?", options: ["malloc", "create", "new", "alloc"], correct: 2 },
+        { id: 15, text: "Which keyword is used to release dynamic memory in C++?", options: ["free", "delete", "clear", "remove"], correct: 1 }
+      ],
+      evs: [
+        { id: 1, text: "Which layer of the atmosphere contains the ozone layer?", options: ["Troposphere", "Stratosphere", "Mesosphere", "Thermosphere"], correct: 1 },
+        { id: 2, text: "What is the primary greenhouse gas emitted by human activities?", options: ["Methane", "Carbon Dioxide", "Nitrous Oxide", "Sulfur Dioxide"], correct: 1 },
+        { id: 3, text: "Toxic chemical accumulation through the food chain is termed:", options: ["Eutrophication", "Biomagnification", "Bioaccumulation", "Biodegradation"], correct: 1 },
+        { id: 4, text: "Which international agreement focuses on phasing out ozone-depleting substances?", options: ["Kyoto Protocol", "Paris Agreement", "Montreal Protocol", "Ramsar Convention"], correct: 2 },
+        { id: 5, text: "What causes cultural eutrophication in freshwater lakes?", options: ["Nitrogen/Phosphorus runoff", "Heavy metal dumping", "Microplastics", "Acid rain"], correct: 0 },
+        { id: 6, text: "Which bacteria is monitored to detect fecal water contamination?", options: ["Escherichia coli", "Lactobacillus", "Spirulina", "Streptococcus"], correct: 0 },
+        { id: 7, text: "Organisms that generate their own food via photosynthesis are called:", options: ["Heterotrophs", "Autotrophs", "Saprotrophs", "Detritivores"], correct: 1 },
+        { id: 8, text: "Which ecosystem has the highest net primary productivity per unit area?", options: ["Tundra", "Tropical Rainforest", "Open Ocean", "Temperate Grassland"], correct: 1 },
+        { id: 9, text: "Minamata disease is caused by toxic exposure to:", options: ["Lead", "Cadmium", "Arsenic", "Methylmercury"], correct: 3 },
+        { id: 10, text: "Photovoltaic cells directly convert solar energy into:", options: ["Heat", "Electricity", "Chemical energy", "Kinetic energy"], correct: 1 },
+        { id: 11, text: "Who proposed the 10 percent energy transfer rule in trophic levels?", options: ["Charles Elton", "Raymond Lindeman", "Eugene Odum", "Arthur Tansley"], correct: 1 },
+        { id: 12, text: "Which toxic gas irreversibly binds to human hemoglobin?", options: ["Carbon Monoxide", "Ozone", "Nitrogen Dioxide", "Sulfur Hexafluoride"], correct: 0 },
+        { id: 13, text: "A species that plays a critical role in maintaining ecosystem structure is:", options: ["Invasive", "Keystone", "Endemic", "Exotic"], correct: 1 },
+        { id: 14, text: "The measure of human demand on Earth's ecosystems is known as:", options: ["Carbon Budget", "Ecological Footprint", "Carrying Capacity", "Biocapacity"], correct: 1 },
+        { id: 15, text: "Ocean acidification is mainly caused by the absorption of:", options: ["Plastic waste", "Carbon Dioxide", "Nitrogen waste", "Heavy minerals"], correct: 1 }
+      ],
+      gk: [
+        { id: 1, text: "Which is the largest and deepest ocean on Earth?", options: ["Atlantic Ocean", "Indian Ocean", "Pacific Ocean", "Arctic Ocean"], correct: 2 },
+        { id: 2, text: "What is the chemical symbol for Gold?", options: ["Ag", "Au", "Fe", "Pb"], correct: 1 },
+        { id: 3, text: "Which is the largest hot desert in the world?", options: ["Gobi Desert", "Kalahari Desert", "Sahara Desert", "Atacama Desert"], correct: 2 },
+        { id: 4, text: "Where is the International Court of Justice located?", options: ["Geneva", "The Hague", "Vienna", "New York"], correct: 1 },
+        { id: 5, text: "What is the currency of Japan?", options: ["Won", "Yuan", "Yen", "Baht"], correct: 2 },
+        { id: 6, text: "Which organ primarily filters human blood?", options: ["Liver", "Kidneys", "Pancreas", "Lungs"], correct: 1 },
+        { id: 7, text: "Who was the first human to travel into space?", options: ["Neil Armstrong", "Yuri Gagarin", "Buzz Aldrin", "John Glenn"], correct: 1 },
+        { id: 8, text: "What is the SI unit of electrical resistance?", options: ["Volt", "Ampere", "Ohm", "Watt"], correct: 2 },
+        { id: 9, text: "Which is the smallest bone in the human body?", options: ["Femur", "Stapes", "Phalanges", "Ulna"], correct: 1 },
+        { id: 10, text: "Which country is called 'Land of the Midnight Sun'?", options: ["Norway", "Iceland", "Finland", "Sweden"], correct: 0 },
+        { id: 11, text: "What is the hardest naturally occurring mineral?", options: ["Corundum", "Quartz", "Diamond", "Topaz"], correct: 2 },
+        { id: 12, text: "Which planet in our solar system is known as the Red Planet?", options: ["Venus", "Mars", "Jupiter", "Saturn"], correct: 1 },
+        { id: 13, text: "Which river is widely recognized as the longest in the world?", options: ["Amazon", "Nile", "Yangtze", "Mississippi"], correct: 1 },
+        { id: 14, text: "Which scale measures earthquake magnitude?", options: ["Beaufort", "Richter", "Kelvin", "Mohs"], correct: 1 },
+        { id: 15, text: "What is the rarest human ABO blood group?", options: ["O-Negative", "AB-Negative", "B-Negative", "A-Negative"], correct: 1 }
+      ],
+      history: [
+        { id: 1, text: "In which year did World War I officially end?", options: ["1917", "1918", "1919", "1920"], correct: 1 },
+        { id: 2, text: "Who was the first Emperor of a unified China?", options: ["Qin Shi Huang", "Han Wudi", "Sun Tzu", "Kublai Khan"], correct: 0 },
+        { id: 3, text: "The ancient city of Mohenjo-daro is in present-day:", options: ["India", "Pakistan", "Afghanistan", "Iran"], correct: 1 },
+        { id: 4, text: "Which Roman leader was assassinated on the Ides of March in 44 BCE?", options: ["Mark Antony", "Julius Caesar", "Nero", "Caligula"], correct: 1 },
+        { id: 5, text: "The storming of the Bastille occurred during which revolution?", options: ["American", "French", "Russian", "Glorious"], correct: 1 },
+        { id: 6, text: "Which Babylonian king formulated an early written legal code?", options: ["Hammurabi", "Gilgamesh", "Nebuchadnezzar II", "Sargon"], correct: 0 },
+        { id: 7, text: "The Battle of Hastings in 1066 took place in:", options: ["France", "Scotland", "England", "Ireland"], correct: 2 },
+        { id: 8, text: "Primary author of the US Declaration of Independence was:", options: ["George Washington", "Benjamin Franklin", "Thomas Jefferson", "John Adams"], correct: 2 },
+        { id: 9, text: "The fall of the Western Roman Empire traditionally marks:", options: ["395 CE", "410 CE", "476 CE", "1453 CE"], correct: 2 },
+        { id: 10, text: "Who painted 'The Last Supper'?", options: ["Michelangelo", "Leonardo da Vinci", "Raphael", "Donatello"], correct: 1 },
+        { id: 11, text: "In which year was the Magna Carta signed by King John?", options: ["1215", "1258", "1314", "1381"], correct: 0 },
+        { id: 12, text: "Suleiman the Magnificent was a sultan of which empire?", options: ["Safavid", "Ottoman", "Mughal", "Umayyad"], correct: 1 },
+        { id: 13, text: "What was the capital of the Byzantine Empire until 1453?", options: ["Alexandria", "Athens", "Constantinople", "Rome"], correct: 2 },
+        { id: 14, text: "The Rosetta Stone was crucial for translating:", options: ["Cuneiform", "Linear A", "Egyptian Hieroglyphs", "Aramaic"], correct: 2 },
+        { id: 15, text: "Who led the Bolsheviks during the 1917 October Revolution?", options: ["Joseph Stalin", "Leon Trotsky", "Vladimir Lenin", "Alexander Kerensky"], correct: 2 }
+      ]
+    };
+
+    // --- 2. Custom PRNG matching C++ Linear Congruential Formula ---
+    let currentSeed = 1234;
+    function getSimpleRandom(maxLimit) {
+      currentSeed = (currentSeed * 1103515245 + 12345) % 2147483648;
+      return currentSeed % maxLimit;
+    }
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = getSimpleRandom(i + 1);
+        const temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+      }
+      return arr;
+    }
+
+    // --- 3. App State Machine ---
+    const state = {
+      currentStep: 1,
+      selectedDomain: "cpp",
+      numStudents: 1,
+      questionsPerQuiz: 10,
+      initialSeed: 1234,
+      currentStudentIndex: 0,
+      students: [],
+      currentQuestionIndex: 0,
+      activeQuestionSet: [],
+      candidateResults: []
+    };
+
+    // --- DOM Elements ---
+    const stepSections = {
+      1: document.getElementById("step1"),
+      2: document.getElementById("step2"),
+      3: document.getElementById("step3"),
+      4: document.getElementById("step4")
+    };
+
+    const globalBackBtn = document.getElementById("globalBackBtn");
+    const stepIndicator = document.getElementById("stepIndicator");
+    const domainNavText = document.getElementById("domainNavText");
+
+    // --- Step Navigation Functions ---
+    function setStep(stepNum) {
+      state.currentStep = stepNum;
+
+      Object.keys(stepSections).forEach(key => {
+        stepSections[key].classList.toggle("active", parseInt(key) === stepNum);
+      });
+
+      // Handle Go Back button visibility
+      if (stepNum === 1) {
+        globalBackBtn.style.visibility = "hidden";
+        stepIndicator.textContent = "Step 1 of 4: Setup";
+      } else if (stepNum === 2) {
+        globalBackBtn.style.visibility = "visible";
+        globalBackBtn.textContent = "← Back to Parameters";
+        stepIndicator.textContent = `Step 2 of 4: Student ${state.currentStudentIndex + 1}/${state.numStudents}`;
+      } else if (stepNum === 3) {
+        globalBackBtn.style.visibility = "visible";
+        globalBackBtn.textContent = "← Restart Current Candidate";
+        stepIndicator.textContent = `Step 3 of 4: Active Examination`;
+      } else if (stepNum === 4) {
+        globalBackBtn.style.visibility = "hidden";
+        stepIndicator.textContent = "Step 4 of 4: Results";
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Handle Back Button Click
+    globalBackBtn.addEventListener("click", () => {
+      if (state.currentStep === 2) {
+        setStep(1);
+      } else if (state.currentStep === 3) {
+        if (confirm("Go back and re-enter candidate info? Current attempt progress will reset.")) {
+          setStep(2);
+        }
+      }
+    });
+
+    // --- Domain Selection Handlers ---
+    const domainCards = document.querySelectorAll(".domain-card");
+    domainCards.forEach(card => {
+      card.addEventListener("click", () => {
+        domainCards.forEach(c => c.classList.remove("active"));
+        card.classList.add("active");
+        state.selectedDomain = card.getAttribute("data-domain");
+
+        const titles = {
+          cpp: "C++ Programming",
+          evs: "Environmental Sciences",
+          gk: "General Knowledge",
+          history: "History"
+        };
+        domainNavText.textContent = `Domain: ${titles[state.selectedDomain]}`;
+      });
+    });
+
+    // --- Step 1: Initialize Quiz Session ---
+    document.getElementById("btnInitQuiz").addEventListener("click", () => {
+      state.numStudents = parseInt(document.getElementById("numStudents").value) || 1;
+      state.questionsPerQuiz = Math.min(15, Math.max(5, parseInt(document.getElementById("qCount").value) || 10));
+      state.initialSeed = parseInt(document.getElementById("seedVal").value) || 1234;
+      currentSeed = state.initialSeed;
+
+      state.currentStudentIndex = 0;
+      state.candidateResults = [];
+
+      prepareStudentForm();
+      setStep(2);
+    });
+
+    function prepareStudentForm() {
+      document.getElementById("studentCounterBadge").textContent =
+        `Student #${state.currentStudentIndex + 1} of ${state.numStudents}`;
+      document.getElementById("studentReg").value = "";
+      document.getElementById("studentName").value = "";
+      document.getElementById("studentReg").focus();
+    }
+
+    // --- Step 2: Start Student Round ---
+    document.getElementById("btnStartStudentRound").addEventListener("click", () => {
+      const reg = document.getElementById("studentReg").value.trim() || `STU-${state.currentStudentIndex + 1}`;
+      const name = document.getElementById("studentName").value.trim() || `Candidate ${state.currentStudentIndex + 1}`;
+
+      const rawBank = [...QUESTION_BANK[state.selectedDomain]];
+      const shuffled = shuffleArray(rawBank);
+      state.activeQuestionSet = shuffled.slice(0, state.questionsPerQuiz);
+
+      state.currentStudent = {
+        reg: reg,
+        name: name,
+        correct: 0,
+        wrong: 0,
+        skipped: 0,
+        score: 0
+      };
+
+      state.currentQuestionIndex = 0;
+      loadActiveQuestion();
+      setStep(3);
+    });
+
+    // --- Step 3: Question Display & Answer Handling ---
+    function loadActiveQuestion() {
+      const q = state.activeQuestionSet[state.currentQuestionIndex];
+      const total = state.activeQuestionSet.length;
+      const progressPct = ((state.currentQuestionIndex) / total) * 100;
+
+      document.getElementById("progressBar").style.width = `${progressPct}%`;
+      document.getElementById("activeCandidateTag").textContent = `${state.currentStudent.name} (${state.currentStudent.reg})`;
+      document.getElementById("qIndexLabel").textContent = `Question ${state.currentQuestionIndex + 1} / ${total}`;
+      document.getElementById("questionText").textContent = q.text;
+
+      const container = document.getElementById("optionsContainer");
+      container.innerHTML = "";
+
+      const keys = ["1", "2", "3", "4"];
+      q.options.forEach((optText, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerHTML = `
+          <span class="option-key">${keys[idx]}</span>
+          <span>${optText}</span>
+        `;
+        btn.addEventListener("click", () => handleAnswer(idx));
+        container.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(selectedOptionIndex) {
+      const q = state.activeQuestionSet[state.currentQuestionIndex];
+      if (selectedOptionIndex === q.correct) {
+        state.currentStudent.correct++;
+        state.currentStudent.score += 1;
+      } else {
+        state.currentStudent.wrong++;
+      }
+      advanceQuestion();
+    }
+
+    // Skip Button Handler
+    document.getElementById("btnSkipQuestion").addEventListener("click", () => {
+      state.currentStudent.skipped++;
+      advanceQuestion();
+    });
+
+    function advanceQuestion() {
+      state.currentQuestionIndex++;
+      if (state.currentQuestionIndex < state.activeQuestionSet.length) {
+        loadActiveQuestion();
+      } else {
+        state.candidateResults.push({ ...state.currentStudent });
+        state.currentStudentIndex++;
+
+        if (state.currentStudentIndex < state.numStudents) {
+          prepareStudentForm();
+          setStep(2);
+        } else {
+          renderScoreboard();
+          setStep(4);
+        }
+      }
+    }
+
+    // --- Step 4: Render Final Scoreboard ---
+    function renderScoreboard() {
+      const titles = {
+        cpp: "C++ Programming",
+        evs: "Environmental Sciences",
+        gk: "General Knowledge",
+        history: "History"
+      };
+      document.getElementById("scoreboardMeta").textContent =
+        `Domain: ${titles[state.selectedDomain]} • ${state.candidateResults.length} Candidate(s) Evaluated`;
+
+      const tbody = document.getElementById("scoreboardBody");
+      tbody.innerHTML = "";
+
+      state.candidateResults.forEach(res => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="reg-tag">${res.reg}</td>
+          <td style="font-weight: 600;">${res.name}</td>
+          <td style="color: #34d399; font-family: var(--font-mono); font-weight: 600;">+${res.correct}</td>
+          <td style="color: #f87171; font-family: var(--font-mono); font-weight: 600;">${res.wrong}</td>
+          <td style="color: var(--text-muted); font-family: var(--font-mono); font-weight: 600;">${res.skipped}</td>
+          <td class="score-badge">${res.score}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Restart All Handler
+    document.getElementById("btnRestartAll").addEventListener("click", () => {
+      setStep(1);
+    });
+  </script>
+</body>
+</html>
