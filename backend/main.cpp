@@ -1,20 +1,22 @@
 #include <iostream>
 #include <string>
+
 using namespace std;
 
+// Include module implementations directly
 #include "QuestionData.cpp"
 #include "QuizEngine.cpp"
 
-// A simple custom random generator using standard math (Linear Congruential Generator)
-// Formula: next = (previous * A + C) % M
+// Global seed state for pseudo-random number generation
 unsigned int seedValue = 12345;
 
+// Linear Congruential Generator: next = (seed * a + c) % m
 int getSimpleRandom(int maxLimit) {
     seedValue = (seedValue * 1103515245 + 12345) % 2147483648;
     return seedValue % maxLimit;
 }
 
-// Simple shuffle function using our custom random generator
+// Fisher-Yates shuffle algorithm to randomize question indices
 void shuffleIndices(int indices[], int n) {
     for (int i = n - 1; i > 0; i--) {
         int j = getSimpleRandom(i + 1);
@@ -29,6 +31,7 @@ int main() {
     cout << "       MINI QUIZ GAME WITH SCORES (OOP C++)\n";
     cout << "====================================================\n";
 
+    // 1. Domain Selection
     cout << "Choose Domain:\n";
     cout << "  1. C++ Programming\n";
     cout << "  2. Environmental Sciences\n";
@@ -43,39 +46,50 @@ int main() {
     QuestionItem bankItems[TOTAL_IN_BANK];
     string domainName = "";
 
-    if (domainChoice == 1) {
-        loadCppQuestions(bankItems);
-        domainName = "C++ Programming";
-    } else if (domainChoice == 2) {
-        loadEvsQuestions(bankItems);
-        domainName = "Environmental Sciences";
-    } else if (domainChoice == 3) {
-        loadGkQuestions(bankItems);
-        domainName = "General Knowledge";
-    } else if (domainChoice == 4) {
-        loadHistoryQuestions(bankItems);
-        domainName = "History";
-    } else {
-        loadCppQuestions(bankItems);
-        domainName = "C++ Programming";
+    switch (domainChoice) {
+        case 1:
+            loadCppQuestions(bankItems);
+            domainName = "C++ Programming";
+            break;
+        case 2:
+            loadEvsQuestions(bankItems);
+            domainName = "Environmental Sciences";
+            break;
+        case 3:
+            loadGkQuestions(bankItems);
+            domainName = "General Knowledge";
+            break;
+        case 4:
+            loadHistoryQuestions(bankItems);
+            domainName = "History";
+            break;
+        default:
+            loadCppQuestions(bankItems);
+            domainName = "C++ Programming";
+            break;
     }
 
+    // 2. Session Configuration
     int numStudents;
     cout << "\nEnter number of participating students: ";
     cin >> numStudents;
+    if (numStudents < 1) numStudents = 1;
+    if (numStudents > 50) numStudents = 50;
 
     int qPerQuiz;
-    cout << "Enter number of questions per quiz (< 15): ";
+    cout << "Enter number of questions per quiz (10 to 15): ";
     cin >> qPerQuiz;
-    if (qPerQuiz < 1) qPerQuiz = 5;
+    if (qPerQuiz < 5) qPerQuiz = 5;
     if (qPerQuiz > 15) qPerQuiz = 15;
 
-    // Ask for a simple seed number to randomize questions differently each session
+    // Seed input for reproducible randomness across rounds
     cout << "Enter any random 2-4 digit number (seed): ";
     cin >> seedValue;
 
+    // Array of Objects: maintains session state for each participant
     StudentSession students[50];
 
+    // 3. Execution of Quiz per Student
     for (int s = 0; s < numStudents; s++) {
         string r, n;
         cout << "\n--------------------------------------------\n";
@@ -86,16 +100,14 @@ int main() {
         cin.ignore();
         getline(cin, n);
 
-        // 1. Prepare indices [0, 1, ..., 14]
+        // Populate index pool [0 ... 14] and shuffle
         int indices[TOTAL_IN_BANK];
         for (int i = 0; i < TOTAL_IN_BANK; i++) {
             indices[i] = i;
         }
-
-        // 2. Shuffle indices using our own function
         shuffleIndices(indices, TOTAL_IN_BANK);
 
-        // 3. Pick the first qPerQuiz questions
+        // Select the first qPerQuiz shuffled questions
         Question selectedQuestions[15];
         for (int i = 0; i < qPerQuiz; i++) {
             int pickedIdx = indices[i];
@@ -107,12 +119,12 @@ int main() {
             );
         }
 
-        // 4. Run the quiz
+        // Initialize and conduct quiz attempt
         students[s].setStudentDetails(r, n, qPerQuiz);
         students[s].conductQuiz(selectedQuestions);
     }
 
-    // --- End-of-Quiz Final Scoreboard ---
+    // 4. Final Scoreboard Display
     cout << "\n\n========================================================================\n";
     cout << "            FINAL SCOREBOARD - DOMAIN: " << domainName << "\n";
     cout << "========================================================================\n";

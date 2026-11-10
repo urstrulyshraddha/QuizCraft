@@ -3,7 +3,67 @@
 
 using namespace std;
 
-// Class 1: Encapsulation of Question details
+// ==========================================
+// 1. INHERITANCE DEMONSTRATION
+// ==========================================
+// Base Class
+class Person {
+protected:
+    string name;
+
+public:
+    Person() {
+        name = "";
+    }
+    Person(string n) {
+        name = n;
+    }
+    string getName() {
+        return name;
+    }
+};
+
+// Derived Class (Inheritance: Student 'is-a' Person)
+class Student : public Person {
+protected:
+    string regNo;
+
+public:
+    Student() : Person() {
+        regNo = "";
+    }
+    Student(string r, string n) : Person(n) {
+        regNo = r;
+    }
+    string getRegNo() {
+        return regNo;
+    }
+};
+
+// ==========================================
+// 2. POLYMORPHISM DEMONSTRATION
+// ==========================================
+// Base Class for Scoring
+class ScoringRule {
+public:
+    // Virtual function for runtime polymorphism (Function Overriding)
+    virtual int calculateScore(int correct) {
+        return correct; // Default rule: 1 mark per correct
+    }
+};
+
+// Derived Class implementing standard evaluation
+class StandardScoring : public ScoringRule {
+public:
+    // Overriding the base class method
+    int calculateScore(int correct) override {
+        return correct * 1;
+    }
+};
+
+// ==========================================
+// 3. ENCAPSULATION & DATA ABSTRACTION
+// ==========================================
 class Question {
 private:
     int id;
@@ -12,14 +72,12 @@ private:
     int correctIndex;
 
 public:
-    // Default constructor
     Question() {
         id = 0;
         text = "";
         correctIndex = 0;
     }
 
-    // Parameterized constructor
     Question(int qId, string qText, string opts[], int cIdx) {
         id = qId;
         text = qText;
@@ -29,7 +87,6 @@ public:
         correctIndex = cIdx;
     }
 
-    // Member function to display question and options
     void displayQuestion(int qNumber) {
         cout << "\nQuestion " << qNumber << ": " << text << "\n";
         for (int i = 0; i < 4; i++) {
@@ -43,36 +100,35 @@ public:
     }
 };
 
-// Class 2: Manages individual student quiz attempt
-class StudentSession {
+// StudentSession inherits from Student (Multi-level Inheritance: Person -> Student -> StudentSession)
+class StudentSession : public Student {
 private:
-    string regNo;
-    string name;
     int totalQuestions;
     int correctCount;
     int wrongCount;
     int skippedCount;
-    int score;
+    int finalScore;
+    ScoringRule* rule; // Base class pointer used for Polymorphism
 
 public:
-    StudentSession() {
-        regNo = "";
-        name = "";
+    StudentSession() : Student() {
         totalQuestions = 0;
         correctCount = 0;
         wrongCount = 0;
         skippedCount = 0;
-        score = 0;
+        finalScore = 0;
+        rule = NULL;
     }
 
-    void setStudentDetails(string r, string n, int qCount) {
+    void setSessionDetails(string r, string n, int qCount, ScoringRule* rPtr) {
         regNo = r;
         name = n;
         totalQuestions = qCount;
         correctCount = 0;
         wrongCount = 0;
         skippedCount = 0;
-        score = 0;
+        finalScore = 0;
+        rule = rPtr;
     }
 
     void conductQuiz(Question quizQuestions[]) {
@@ -88,7 +144,6 @@ public:
             cout << "Your Choice: ";
             cin >> choice;
 
-            // Simple validation
             while (choice < 0 || choice > 4) {
                 cout << "Invalid choice! Enter 0 to Skip, or 1-4: ";
                 cin >> choice;
@@ -98,21 +153,27 @@ public:
                 skippedCount++;
             } else if ((choice - 1) == quizQuestions[i].getCorrectIndex()) {
                 correctCount++;
-                score += 1; // 1 mark per correct answer, 0 for wrong/skip
             } else {
                 wrongCount++;
             }
         }
+
+        // Polymorphic call: calculates score through base pointer
+        if (rule != NULL) {
+            finalScore = rule->calculateScore(correctCount);
+        } else {
+            finalScore = correctCount;
+        }
+
         cout << "\nQuiz completed for " << name << "!\n";
     }
 
-    // Formatted row for final scoreboard
     void printScoreCard() {
         cout << regNo << "\t\t"
              << name << "\t\t"
              << correctCount << "\t\t"
              << wrongCount << "\t\t"
              << skippedCount << "\t\t"
-             << score << "\n";
+             << finalScore << "\n";
     }
 };
