@@ -3,10 +3,7 @@
 
 using namespace std;
 
-// ==========================================
-// 1. INHERITANCE DEMONSTRATION
-// ==========================================
-// Base Class
+// Base class representing a person
 class Person {
 protected:
     string name;
@@ -23,7 +20,7 @@ public:
     }
 };
 
-// Derived Class (Inheritance: Student 'is-a' Person)
+// Single inheritance: Student extends Person
 class Student : public Person {
 protected:
     string regNo;
@@ -40,30 +37,23 @@ public:
     }
 };
 
-// ==========================================
-// 2. POLYMORPHISM DEMONSTRATION
-// ==========================================
-// Base Class for Scoring
+// Base scoring interface for runtime polymorphism
 class ScoringRule {
 public:
-    // Virtual function for runtime polymorphism (Function Overriding)
     virtual int calculateScore(int correct) {
-        return correct; // Default rule: 1 mark per correct
+        return correct;
     }
 };
 
-// Derived Class implementing standard evaluation
+// Derived scoring implementation
 class StandardScoring : public ScoringRule {
 public:
-    // Overriding the base class method
     int calculateScore(int correct) override {
         return correct * 1;
     }
 };
 
-// ==========================================
-// 3. ENCAPSULATION & DATA ABSTRACTION
-// ==========================================
+// Encapsulates individual question state and display
 class Question {
 private:
     int id;
@@ -100,7 +90,7 @@ public:
     }
 };
 
-// StudentSession inherits from Student (Multi-level Inheritance: Person -> Student -> StudentSession)
+// Multilevel inheritance: Person -> Student -> StudentSession
 class StudentSession : public Student {
 private:
     int totalQuestions;
@@ -108,7 +98,7 @@ private:
     int wrongCount;
     int skippedCount;
     int finalScore;
-    ScoringRule* rule; // Base class pointer used for Polymorphism
+    ScoringRule* rule;
 
 public:
     StudentSession() : Student() {
@@ -158,7 +148,7 @@ public:
             }
         }
 
-        // Polymorphic call: calculates score through base pointer
+        // Dynamic dispatch via base pointer
         if (rule != NULL) {
             finalScore = rule->calculateScore(correctCount);
         } else {

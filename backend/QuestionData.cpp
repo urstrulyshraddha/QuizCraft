@@ -7,10 +7,9 @@ struct QuestionItem {
     int id;
     string text;
     string options[4];
-    int correctIndex; // 0 for Option 1, 1 for Option 2, etc.
+    int correctIndex;
 };
 
-// C++ Domain Questions
 void loadCppQuestions(QuestionItem arr[]) {
     arr[0] = {1, "Which concept allows using the same function name with different arguments?", {"Encapsulation", "Function Overloading", "Virtual Functions", "Abstraction"}, 1};
     arr[1] = {2, "Which operator cannot be overloaded in C++?", {"+", "==", "::", "[]"}, 2};
@@ -29,7 +28,6 @@ void loadCppQuestions(QuestionItem arr[]) {
     arr[14] = {15, "Which keyword is used to release dynamic memory in C++?", {"free", "delete", "clear", "remove"}, 1};
 }
 
-// Environmental Sciences Domain Questions
 void loadEvsQuestions(QuestionItem arr[]) {
     arr[0] = {1, "Which layer of the atmosphere contains the ozone layer?", {"Troposphere", "Stratosphere", "Mesosphere", "Thermosphere"}, 1};
     arr[1] = {2, "What is the primary greenhouse gas emitted by human activities?", {"Methane", "Carbon Dioxide", "Nitrous Oxide", "Sulfur Dioxide"}, 1};
@@ -48,7 +46,6 @@ void loadEvsQuestions(QuestionItem arr[]) {
     arr[14] = {15, "Ocean acidification is mainly caused by the absorption of:", {"Plastic waste", "Carbon Dioxide", "Nitrogen waste", "Heavy minerals"}, 1};
 }
 
-// General Knowledge Domain Questions
 void loadGkQuestions(QuestionItem arr[]) {
     arr[0] = {1, "Which is the largest and deepest ocean on Earth?", {"Atlantic Ocean", "Indian Ocean", "Pacific Ocean", "Arctic Ocean"}, 2};
     arr[1] = {2, "What is the chemical symbol for Gold?", {"Ag", "Au", "Fe", "Pb"}, 1};
@@ -62,12 +59,11 @@ void loadGkQuestions(QuestionItem arr[]) {
     arr[9] = {10, "Which country is called 'Land of the Midnight Sun'?", {"Norway", "Iceland", "Finland", "Sweden"}, 0};
     arr[10] = {11, "What is the hardest naturally occurring mineral?", {"Corundum", "Quartz", "Diamond", "Topaz"}, 2};
     arr[11] = {12, "Which planet in our solar system is known as the Red Planet?", {"Venus", "Mars", "Jupiter", "Saturn"}, 1};
-    arr[11] = {13, "Which river is widely recognized as the longest in the world?", {"Amazon", "Nile", "Yangtze", "Mississippi"}, 1};
+    arr[12] = {13, "Which river is widely recognized as the longest in the world?", {"Amazon", "Nile", "Yangtze", "Mississippi"}, 1};
     arr[13] = {14, "Which scale measures earthquake magnitude?", {"Beaufort", "Richter", "Kelvin", "Mohs"}, 1};
     arr[14] = {15, "What is the rarest human ABO blood group?", {"O-Negative", "AB-Negative", "B-Negative", "A-Negative"}, 1};
 }
 
-// History Domain Questions
 void loadHistoryQuestions(QuestionItem arr[]) {
     arr[0] = {1, "In which year did World War I officially end?", {"1917", "1918", "1919", "1920"}, 1};
     arr[1] = {2, "Who was the first Emperor of a unified China?", {"Qin Shi Huang", "Han Wudi", "Sun Tzu", "Kublai Khan"}, 0};
